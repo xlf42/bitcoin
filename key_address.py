@@ -51,9 +51,9 @@ def base58_encode(data):
         b58_string = '1' + b58_string
     return b58_string
 
-def sha256_checksum(bytes):
+def sha256_checksum(data):
     # Double SHA256 to get checksum
-    sha256 = hashlib.sha256(bytes)
+    sha256 = hashlib.sha256(data)
     sha256_digest = sha256.digest()
     sha256_2 = hashlib.sha256(sha256_digest)
     sha256_2_digest = sha256_2.digest()
