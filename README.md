@@ -44,7 +44,13 @@ We convert the private key into the so called Wallet Import format, which you ca
     privkey_wif = generate_privkey_wif(hex(privkey))
     print('Private Key (WIF): {:s}'.format(privkey_wif))
 ```
+For educational purpose, we convert the WIF formatted key back to the integer number:
 
+```python
+    # for educational purpose, we convert the wif formatted private key back into the hex form
+    privkey_edu = decode_privkey_wif(privkey_wif)
+    print('Re-Converted Private Key: 0x{:x}'.format(privkey_edu))
+```
 Now, the public key and the address
 
 ```python
@@ -60,5 +66,4 @@ Now, the public key and the address
     # and finally the address
     address = generate_address(pubkey_compressed)
     print('Address: {:s}'.format(address))
-
 ```

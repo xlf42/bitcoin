@@ -23,6 +23,7 @@ import codecs
 import ecdsa
 import hashlib
 
+
 def base58_encode(data):
     alphabet = '123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz'
     b58_string = ''
@@ -51,6 +52,21 @@ def base58_encode(data):
         b58_string = '1' + b58_string
     return b58_string
 
+
+def base58_decode(s):
+    """
+    We get a base58 encoded string and return the corresponding integer number
+    """
+    alphabet = '123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz'
+    num = 0
+    
+    # we loop over each character and construct the integer number
+    for c in s:
+        num = num * 58 + alphabet.index(c)
+    
+    return num
+
+
 def sha256_checksum(data):
     # Double SHA256 to get checksum
     sha256 = hashlib.sha256(data)
@@ -60,7 +76,7 @@ def sha256_checksum(data):
     sha256_2_hex = codecs.encode(sha256_2_digest, 'hex')
     checksum = sha256_2_hex[:8]
     return checksum
-    
+
 
 def generate_privkey_wif(privkey):
     # first, we need to add the Private Key prefix 0x80 and suffix with 0x01 to indicate a compressed public key (and resulting address)
@@ -69,6 +85,23 @@ def generate_privkey_wif(privkey):
     privkey_checksum_hex = privkey_hex + checksum.decode('utf-8')
     privkey_wif = base58_encode(privkey_checksum_hex)
     return privkey_wif
+
+
+def decode_privkey_wif(privkey_wif, verify_checksum=True):
+    """ We decode a wif-encoded private key back to the hex number. In case the checksum doesn't match, we return None """
+    # first a simple base58 decoding
+    privkey_wif_int = base58_decode(privkey_wif)
+    print ('privkey_wif_hex: 0x{:x}'.format(privkey_wif_int))
+    # the last four bytes are the checksum
+    privkey_checksum = privkey_wif_int % 0xFFFFFFFF
+    # TODO: We need to do the checksum-check
+    pass
+    # now we remove the checksum we hardcode the removal of the 'compression byte' and the prefix 0x80
+    # (in a real implementation, we should only remove the compression byte if it was there)
+    # we 'cheat' by doing these operations on a hex string instead of doing the integer arithmetics
+    privkey_s = hex(privkey_wif_int)[4:-10]
+    # now returning the key as an integer
+    return int(privkey_s, 16)
 
 
 def generate_pubkey(privkey):
@@ -83,6 +116,7 @@ def generate_pubkey(privkey):
     bitcoin_byte = b'04'
     pubkey = bitcoin_byte + key_hex
     return '0x' + pubkey.decode('ascii')
+
 
 def generate_compressed_pubkey(privkey):
     # we expect the privkey to be a string containing the private key as 'normal' hex (prefixed with '0x')
@@ -126,6 +160,7 @@ def generate_address(pubkey):
     wallet = base58_encode(address_hex)
     return wallet
 
+
 if __name__ == '__main__':
     # assign *some* private key as integer (we use hex here)
     # I used the value from this page: 
@@ -138,6 +173,10 @@ if __name__ == '__main__':
     # The steps are described here: https://en.bitcoin.it/wiki/Wallet_import_format
     privkey_wif = generate_privkey_wif(hex(privkey))
     print('Private Key (WIF): {:s}'.format(privkey_wif))
+    
+    # for educational purpose, we convert the wif formatted private key back into the hex form
+    privkey_edu = decode_privkey_wif(privkey_wif)
+    print('Re-Converted Private Key: 0x{:x}'.format(privkey_edu))
 
     # we generate a public key, which is apparently rarely used, but is 
     # the first step from the private key to the bitcoin address
