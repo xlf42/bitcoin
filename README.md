@@ -67,6 +67,31 @@ Now, the public key and the address
     address = generate_address(pubkey_compressed)
     print('Address: {:s}'.format(address))
 ```
+
+### Wallet Import Format (WIF)
+
+The conversion between the Integer Number and WIF works both ways, as it is nothing more than 
+1. adding a heading and trailing byte
+2. adding a checksum
+3. converting into Base58
+this is implemented in this function:
+
+```python
+def generate_privkey_wif(privkey)
+```
+
+The reverse would be
+1. convert from Base58 into Integer
+2. extract the Checksum (and check if you want)
+3. remove the heading and trailing byte
+which is available here:
+
+```python
+def decode_privkey_wif(privkey_wif, verify_checksum=True)
+```
+
+
+
 ## what the tests are doing
 A test with takes the same key as in key_address.py and does a conversion into WIF and back checking the results.
 
