@@ -106,7 +106,6 @@ def decode_privkey_wif(privkey_wif, verify_checksum=True):
         checksum = sha256_checksum(codecs.decode(hex(privkey_wif_int)[2:-8], 'hex')).decode('utf8')
         if checksum != privkey_checksum:
             return None
-        
     # now returning the key as an integer
     return int(privkey_s, 16)
 

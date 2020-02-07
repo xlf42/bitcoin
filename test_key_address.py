@@ -46,7 +46,8 @@ def test_vanity_key():
     privkey_wif = 'KzXLF42sprivatekeyFtQ7WzVYagcT46ojzEhoudUiwwsCHCKSUM'
     # testing the conversion back, it should fail in case we verify the checksum
     privkey = key_address.decode_privkey_wif(privkey_wif, verify_checksum=True)
-    assert privkey == None
+    if privkey is not None:
+        pytest.fail()
     # testing the conversion back, it should fail in case we verify the checksum
     privkey = key_address.decode_privkey_wif(privkey_wif, verify_checksum=False)
     assert privkey == 44587851312071854085406562145079607654624912002403596259516646850170878049971
