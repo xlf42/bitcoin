@@ -44,8 +44,12 @@ def test_vanity_key():
     # Note: this string contains an invalid checksum at the end, so the final
     # private key will have a different suffix (with a fixed checksum)
     privkey_wif = 'KzXLF42sprivatekeyFtQ7WzVYagcT46ojzEhoudUiwwsCHCKSUM'
-    # testing the conversion back
-    privkey = key_address.decode_privkey_wif(privkey_wif)
+    # testing the conversion back, it should fail in case we verify the checksum
+    privkey = key_address.decode_privkey_wif(privkey_wif, verify_checksum=True)
+    assert privkey == None
+    # testing the conversion back, it should fail in case we verify the checksum
+    privkey = key_address.decode_privkey_wif(privkey_wif, verify_checksum=False)
+    assert privkey == 44587851312071854085406562145079607654624912002403596259516646850170878049971
     privkey_wif = key_address.generate_privkey_wif(hex(privkey))
     assert privkey_wif == 'KzXLF42sprivatekeyFtQ7WzVYagcT46ojzEhoudUiwwsCQkPe65'
 

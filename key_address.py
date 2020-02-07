@@ -93,17 +93,20 @@ def decode_privkey_wif(privkey_wif, verify_checksum=True):
     In case the checksum doesn't match, we return None """
     # first a simple base58 decoding
     privkey_wif_int = base58_decode(privkey_wif)
-    print('privkey_wif_hex: 0x{:x}'.format(privkey_wif_int))
     # the last four bytes are the checksum
-    privkey_checksum = privkey_wif_int % 0xFFFFFFFF
-    # TODO: We need to do the checksum-check
-    pass
+    privkey_checksum = hex(privkey_wif_int)[-8:]
     # now we remove the checksum we hardcode the removal of the
     # 'compression byte' and the prefix 0x80 (in a real implementation,
     # we should only remove the compression byte if it was there) we 'cheat'
     # by doing these operations on a hex string instead of doing the
     # integer arithmetics
     privkey_s = hex(privkey_wif_int)[4:-10]
+    # right place to verify the checksum
+    if verify_checksum:
+        checksum = sha256_checksum(codecs.decode(hex(privkey_wif_int)[2:-8], 'hex')).decode('utf8')
+        if checksum != privkey_checksum:
+            return None
+        
     # now returning the key as an integer
     return int(privkey_s, 16)
 
